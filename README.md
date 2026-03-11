@@ -73,9 +73,15 @@ claude --plugin-dir /path/to/Claude-Paste
 - **Node.js** (any version supported by Claude Code)
 - **No npm dependencies** — zero-dependency, pure Node.js built-ins only
 - **OS support:**
-  - ✅ Windows (PowerShell + Win32 API)
-  - ✅ macOS (osascript / AppleScript)
-  - ✅ Linux (xclip for X11, wl-paste for Wayland)
+  - ✅ Windows (PowerShell + Win32 API — built-in, nothing to install)
+  - ✅ macOS (auto-installs `pngpaste` via Homebrew on first run)
+  - ✅ Linux (auto-installs `xclip` and/or `wl-clipboard` on first run)
+
+### Zero configuration
+
+All platform dependencies are installed automatically on the first session start. The plugin detects your OS, display server, and package manager — then installs what's needed silently. Supports `apt`, `dnf`, `pacman`, `zypper`, and `apk`.
+
+> **Note**: Linux auto-install uses `sudo -n` (non-interactive sudo). If your system requires a password for sudo, install manually: `sudo apt install xclip` (Debian/Ubuntu) or the equivalent for your distro.
 
 ## Plugin structure
 
@@ -141,22 +147,6 @@ Or set it in your shell profile for system-wide effect:
 
 ```bash
 export CLAUDE_PASTE_FRESHNESS=120
-```
-
-### Linux requirements
-
-On Linux, you need one of:
-- **X11**: `xclip` (`sudo apt install xclip`)
-- **Wayland**: `wl-clipboard` (`sudo apt install wl-clipboard`)
-
-The plugin auto-detects your display server via `WAYLAND_DISPLAY` and `DISPLAY` environment variables.
-
-### macOS note
-
-The plugin uses `osascript` (built-in) for clipboard access. For faster performance, optionally install `pngpaste`:
-
-```bash
-brew install pngpaste
 ```
 
 ## License

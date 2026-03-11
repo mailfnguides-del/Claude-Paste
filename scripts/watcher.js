@@ -11,30 +11,78 @@ import { writeFileSync, readFileSync, existsSync, mkdirSync } from "fs";
 const stateDir = join(tmpdir(), "claude-paste");
 mkdirSync(stateDir, { recursive: true });
 
-// macOS: auto-install pngpaste for faster clipboard image handling
+// Auto-install platform dependencies on first run
 const os_name = platform();
-if (os_name === "darwin") {
+
+function tryExec(cmd, opts = {}) {
   try {
-    execSync("which pngpaste", { stdio: "ignore", timeout: 3000 });
+    execSync(cmd, { stdio: "ignore", timeout: opts.timeout || 30000, ...opts });
+    return true;
   } catch {
-    // pngpaste not found — try to install it
-    try {
-      execSync("which brew", { stdio: "ignore", timeout: 3000 });
-      // brew is available — install pngpaste silently
-      execSync("brew install pngpaste", { stdio: "ignore", timeout: 60000 });
-    } catch {
-      // brew not available — install it first, then pngpaste
-      try {
-        execSync(
+    return false;
+  }
+}
+
+function cmdExists(cmd) {
+  try {
+    execSync(`which ${cmd}`, { stdio: "ignore", timeout: 3000 });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// Marker file so we only attempt installation once (not every session)
+const setupDoneFile = join(stateDir, "setup-complete");
+const needsSetup = !existsSync(setupDoneFile);
+
+if (needsSetup) {
+  if (os_name === "darwin") {
+    // macOS: install pngpaste for faster clipboard handling
+    if (!cmdExists("pngpaste")) {
+      if (cmdExists("brew")) {
+        tryExec("brew install pngpaste", { timeout: 60000 });
+      } else {
+        // Install brew first (non-interactive), then pngpaste
+        if (tryExec(
           '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"',
-          { stdio: "ignore", timeout: 120000, env: { ...process.env, NONINTERACTIVE: "1" } }
-        );
-        execSync("brew install pngpaste", { stdio: "ignore", timeout: 60000 });
-      } catch {
-        // Installation failed — osascript fallback will be used
+          { timeout: 120000, env: { ...process.env, NONINTERACTIVE: "1" } }
+        )) {
+          tryExec("brew install pngpaste", { timeout: 60000 });
+        }
+      }
+    }
+  } else if (os_name === "linux") {
+    // Linux: install clipboard tools for the user's display server
+    // Detect package manager
+    const hasPkgMgr = (cmd) => cmdExists(cmd);
+    let installCmd = null;
+    if (hasPkgMgr("apt-get")) {
+      installCmd = (pkg) => `sudo -n apt-get install -y ${pkg} 2>/dev/null`;
+    } else if (hasPkgMgr("dnf")) {
+      installCmd = (pkg) => `sudo -n dnf install -y ${pkg} 2>/dev/null`;
+    } else if (hasPkgMgr("pacman")) {
+      installCmd = (pkg) => `sudo -n pacman -S --noconfirm ${pkg} 2>/dev/null`;
+    } else if (hasPkgMgr("zypper")) {
+      installCmd = (pkg) => `sudo -n zypper install -y ${pkg} 2>/dev/null`;
+    } else if (hasPkgMgr("apk")) {
+      installCmd = (pkg) => `sudo -n apk add ${pkg} 2>/dev/null`;
+    }
+
+    if (installCmd) {
+      // Install xclip (works on both X11 and many Wayland setups via XWayland)
+      if (!cmdExists("xclip")) {
+        tryExec(installCmd("xclip"), { timeout: 60000 });
+      }
+      // Install wl-clipboard for native Wayland support
+      if (process.env.WAYLAND_DISPLAY && !cmdExists("wl-paste")) {
+        tryExec(installCmd("wl-clipboard"), { timeout: 60000 });
       }
     }
   }
+
+  // Mark setup as done so we don't retry every session
+  try { writeFileSync(setupDoneFile, new Date().toISOString()); } catch {}
 }
 const stateFile = join(stateDir, "watcher-state.json");
 const pidFile = join(stateDir, "watcher.pid");
