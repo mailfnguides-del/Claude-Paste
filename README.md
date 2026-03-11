@@ -86,7 +86,41 @@ If you're building integration for another terminal AI tool (OpenCode, Gemini CL
 
 ## Configuration
 
-The freshness threshold (how recent a screenshot must be to auto-send) defaults to **90 seconds**. To change it, edit the `FRESHNESS_THRESHOLD_MS` constant in `scripts/hook.js`.
+### Freshness threshold
+
+The freshness window (how recent a screenshot must be to auto-send) defaults to **90 seconds**. You can change it by setting the `CLAUDE_PASTE_FRESHNESS` environment variable (in seconds).
+
+In Claude Code, add this to your settings (`~/.claude/settings.json`):
+
+```json
+{
+  "env": {
+    "CLAUDE_PASTE_FRESHNESS": "120"
+  }
+}
+```
+
+Or set it in your shell profile for system-wide effect:
+
+```bash
+export CLAUDE_PASTE_FRESHNESS=120
+```
+
+### Linux requirements
+
+On Linux, you need one of:
+- **X11**: `xclip` (`sudo apt install xclip`)
+- **Wayland**: `wl-clipboard` (`sudo apt install wl-clipboard`)
+
+The plugin auto-detects your display server via `WAYLAND_DISPLAY` and `DISPLAY` environment variables.
+
+### macOS note
+
+The plugin uses `osascript` (built-in) for clipboard access. For faster performance, optionally install `pngpaste`:
+
+```bash
+brew install pngpaste
+```
 
 ## License
 

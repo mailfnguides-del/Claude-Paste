@@ -1,6 +1,6 @@
 // UserPromptSubmit hook: only sends clipboard images that are FRESH.
 // Reads the watcher's state file to check when the clipboard image appeared.
-// Threshold: 90 seconds — if the image was placed more than 90s ago, skip it.
+// Configurable via CLAUDE_PASTE_FRESHNESS env var (in seconds). Default: 90s.
 
 import { join } from "path";
 import { tmpdir } from "os";
@@ -9,7 +9,8 @@ import { randomUUID } from "crypto";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 
-const FRESHNESS_THRESHOLD_MS = 90 * 1000; // 90 seconds
+const freshnessSeconds = parseInt(process.env.CLAUDE_PASTE_FRESHNESS || "90", 10);
+const FRESHNESS_THRESHOLD_MS = freshnessSeconds * 1000;
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const libPath = join(__dirname, "..", "lib", "clipboard.js");
