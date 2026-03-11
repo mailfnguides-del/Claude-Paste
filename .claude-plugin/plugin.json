@@ -1,6 +1,6 @@
 {
   "name": "claude-paste",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Paste clipboard screenshots into Claude Code automatically. Take a screenshot, type your message, and Claude sees it — no dragging files.",
   "author": {
     "name": "phili"
@@ -8,5 +8,6 @@
   "license": "MIT",
   "keywords": ["clipboard", "screenshot", "paste", "image", "productivity"],
   "hooks": "./hooks/hooks.json",
-  "mcpServers": "./.mcp.json"
+  "mcpServers": "./.mcp.json",
+  "skills": ["./skills/configure"]
 }

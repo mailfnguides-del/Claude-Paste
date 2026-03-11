@@ -14,7 +14,7 @@
         "repo": "mailfnguides-del/Claude-Paste"
       },
       "description": "Paste clipboard screenshots into Claude Code automatically. Take a screenshot, type your message, and Claude sees it — no dragging files. Zero dependencies, cross-platform.",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": {
         "name": "mailfnguides-del"
       },

@@ -2,7 +2,7 @@
 // Records timestamps when clipboard image content changes.
 // Lightweight: uses OS-native clipboard sequence numbers, no image processing.
 
-import { spawn } from "child_process";
+import { spawn, execSync } from "child_process";
 import { platform } from "os";
 import { join } from "path";
 import { tmpdir } from "os";
@@ -10,6 +10,32 @@ import { writeFileSync, readFileSync, existsSync, mkdirSync } from "fs";
 
 const stateDir = join(tmpdir(), "claude-paste");
 mkdirSync(stateDir, { recursive: true });
+
+// macOS: auto-install pngpaste for faster clipboard image handling
+const os_name = platform();
+if (os_name === "darwin") {
+  try {
+    execSync("which pngpaste", { stdio: "ignore", timeout: 3000 });
+  } catch {
+    // pngpaste not found — try to install it
+    try {
+      execSync("which brew", { stdio: "ignore", timeout: 3000 });
+      // brew is available — install pngpaste silently
+      execSync("brew install pngpaste", { stdio: "ignore", timeout: 60000 });
+    } catch {
+      // brew not available — install it first, then pngpaste
+      try {
+        execSync(
+          '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"',
+          { stdio: "ignore", timeout: 120000, env: { ...process.env, NONINTERACTIVE: "1" } }
+        );
+        execSync("brew install pngpaste", { stdio: "ignore", timeout: 60000 });
+      } catch {
+        // Installation failed — osascript fallback will be used
+      }
+    }
+  }
+}
 const stateFile = join(stateDir, "watcher-state.json");
 const pidFile = join(stateDir, "watcher.pid");
 

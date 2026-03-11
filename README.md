@@ -61,7 +61,9 @@ claude --plugin-dir /path/to/Claude-Paste
 
 ```
 Claude-Paste/
-├── .claude-plugin/plugin.json   # Plugin manifest
+├── .claude-plugin/
+│   ├── plugin.json              # Plugin manifest
+│   └── marketplace.json         # Marketplace manifest
 ├── .mcp.json                    # MCP server config
 ├── hooks/hooks.json             # Hook definitions
 ├── lib/clipboard.js             # Cross-platform clipboard API
@@ -69,6 +71,7 @@ Claude-Paste/
 │   ├── hook.js                  # Prompt hook (auto-paste)
 │   └── watcher.js               # Background clipboard monitor
 ├── server/index.js              # Zero-dep MCP server
+├── skills/configure/SKILL.md    # /claude-paste:configure command
 ├── package.json
 ├── LICENSE
 └── README.md
@@ -88,9 +91,23 @@ If you're building integration for another terminal AI tool (OpenCode, Gemini CL
 
 ### Freshness threshold
 
-The freshness window (how recent a screenshot must be to auto-send) defaults to **90 seconds**. You can change it by setting the `CLAUDE_PASTE_FRESHNESS` environment variable (in seconds).
+The freshness window (how recent a screenshot must be to auto-send) defaults to **90 seconds**. There are two ways to change it:
 
-In Claude Code, add this to your settings (`~/.claude/settings.json`):
+**Option 1: Slash command (easiest)**
+
+Type `/claude-paste:configure` in Claude Code and pick from presets:
+
+| Preset | Seconds | Best for |
+|--------|---------|----------|
+| Fast | 60s | Screenshot and type immediately |
+| Default | 90s | Good balance for most users |
+| Relaxed | 120s | Extra time to compose your message |
+| Extended | 180s | When you need to think before typing |
+| Custom | any | Enter your own value |
+
+**Option 2: Manual setting**
+
+Add this to your settings (`~/.claude/settings.json`):
 
 ```json
 {
