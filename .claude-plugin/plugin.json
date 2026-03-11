@@ -7,7 +7,6 @@
   },
   "license": "MIT",
   "keywords": ["clipboard", "screenshot", "paste", "image", "productivity"],
-  "hooks": "./hooks/hooks.json",
   "mcpServers": "./.mcp.json",
   "skills": ["./skills/configure"]
 }
