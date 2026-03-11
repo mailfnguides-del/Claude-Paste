@@ -1,0 +1,93 @@
+# Claude-Paste
+
+**Paste clipboard screenshots into Claude Code automatically.** Take a screenshot, type your message, and Claude sees it — no dragging files, no extra commands.
+
+Built for [Claude Code](https://claude.ai/claude-code), but the architecture is open and adaptable to any terminal-based AI tool (OpenCode, Gemini CLI, etc.).
+
+## How it works
+
+1. **Take a screenshot** (`Win+Shift+S`, `Cmd+Shift+4`, `Print Screen`, or any tool)
+2. **Type your message** in Claude Code and press Enter
+3. **Claude sees your screenshot** — automatically attached, no extra steps
+
+That's it. No `/paste` command, no dragging files from a folder, no file paths. Just screenshot → type → done.
+
+### Smart freshness detection
+
+Claude-Paste only sends **fresh** screenshots. If you took a screenshot an hour ago to send to a friend, it won't accidentally get sent to Claude. The plugin tracks clipboard changes in real-time and only attaches images placed on the clipboard within the last 90 seconds.
+
+| Scenario | Result |
+|---|---|
+| Screenshot → type message immediately | ✅ Sent |
+| Screenshot → send to friend → Claude 10 min later | ⏭️ Skipped (stale) |
+| Old screenshot from hours ago | ⏭️ Skipped |
+| Explicit "paste my clipboard" | ✅ MCP tool works always |
+
+### How it works under the hood
+
+- **Background watcher** starts with your Claude session, monitors clipboard changes using OS-native APIs (Windows: `GetClipboardSequenceNumber`, macOS: `clipboard info`, Linux: `xclip`/`wl-paste`)
+- **Prompt hook** fires on every message — checks if a fresh image exists, saves it, tells Claude where to find it, then clears the image from clipboard (one-time paste semantics)
+- **MCP tool** (`paste_screenshot`) available as explicit fallback for when you want to paste regardless of freshness
+
+## Installation
+
+### As a Claude Code plugin
+
+```bash
+# From the Claude Code marketplace (when available)
+/plugin install claude-paste
+
+# Or load directly from this repo
+claude --plugin-dir /path/to/Claude-Paste
+```
+
+### Manual setup
+
+```bash
+git clone https://github.com/mailfnguides-del/Claude-Paste.git
+claude --plugin-dir ./Claude-Paste
+```
+
+## Requirements
+
+- **Node.js** (any version supported by Claude Code)
+- **No npm dependencies** — zero-dependency, pure Node.js built-ins only
+- **OS support:**
+  - ✅ Windows (PowerShell + Win32 API)
+  - ✅ macOS (osascript / AppleScript)
+  - ✅ Linux (xclip for X11, wl-paste for Wayland)
+
+## Plugin structure
+
+```
+Claude-Paste/
+├── .claude-plugin/plugin.json   # Plugin manifest
+├── .mcp.json                    # MCP server config
+├── hooks/hooks.json             # Hook definitions
+├── lib/clipboard.js             # Cross-platform clipboard API
+├── scripts/
+│   ├── hook.js                  # Prompt hook (auto-paste)
+│   └── watcher.js               # Background clipboard monitor
+├── server/index.js              # Zero-dep MCP server
+├── package.json
+├── LICENSE
+└── README.md
+```
+
+## Adapting for other tools
+
+Claude-Paste is built for Claude Code's plugin system (hooks + MCP), but the core logic is tool-agnostic:
+
+- **`lib/clipboard.js`** — Cross-platform clipboard detection, image saving, and clearing. Works standalone.
+- **`scripts/watcher.js`** — Background clipboard monitor with timestamp tracking. Writes to a JSON state file that any tool can read.
+- **`server/index.js`** — Minimal MCP server (JSON-RPC over stdio). Can be adapted to any MCP-compatible client.
+
+If you're building integration for another terminal AI tool (OpenCode, Gemini CLI, Aider, etc.), you can reuse `lib/clipboard.js` and `scripts/watcher.js` directly — they have zero dependencies on Claude Code.
+
+## Configuration
+
+The freshness threshold (how recent a screenshot must be to auto-send) defaults to **90 seconds**. To change it, edit the `FRESHNESS_THRESHOLD_MS` constant in `scripts/hook.js`.
+
+## License
+
+[MIT](LICENSE) — do whatever you want with it.

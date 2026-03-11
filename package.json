@@ -1,0 +1,7 @@
+{
+  "name": "claude-paste",
+  "version": "1.0.0",
+  "description": "Paste clipboard screenshots into Claude Code automatically",
+  "type": "module",
+  "license": "MIT"
+}
