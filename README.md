@@ -42,6 +42,26 @@ In Claude Code, run these two commands:
 
 That's it. Restart Claude Code and you're ready to paste screenshots.
 
+### Enable auto-updates
+
+To automatically receive new features and fixes when you start Claude Code, add `autoUpdate` to your marketplace config. Open `~/.claude/settings.json` and set:
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "claude-paste-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "mailfnguides-del/Claude-Paste"
+      },
+      "autoUpdate": true
+    }
+  }
+}
+```
+
+Or manually update anytime with: `/plugin update claude-paste@claude-paste-marketplace`
+
 ### Alternative: load directly
 
 ```bash
