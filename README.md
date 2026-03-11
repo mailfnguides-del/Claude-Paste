@@ -31,21 +31,21 @@ Claude-Paste only sends **fresh** screenshots. If you took a screenshot an hour 
 
 ## Installation
 
-### As a Claude Code plugin
+### One-command install
 
-```bash
-# From the Claude Code marketplace (when available)
-/plugin install claude-paste
+In Claude Code, run these two commands:
 
-# Or load directly from this repo
-claude --plugin-dir /path/to/Claude-Paste
+```
+/plugin marketplace add mailfnguides-del/Claude-Paste
+/plugin install claude-paste@claude-paste-marketplace
 ```
 
-### Manual setup
+That's it. Restart Claude Code and you're ready to paste screenshots.
+
+### Alternative: load directly
 
 ```bash
-git clone https://github.com/mailfnguides-del/Claude-Paste.git
-claude --plugin-dir ./Claude-Paste
+claude --plugin-dir /path/to/Claude-Paste
 ```
 
 ## Requirements
