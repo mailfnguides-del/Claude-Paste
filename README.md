@@ -6,11 +6,15 @@ Built for [Claude Code](https://claude.ai/claude-code), but the architecture is 
 
 ## How it works
 
-1. **Take a screenshot** (`Win+Shift+S`, `Cmd+Shift+4`, `Print Screen`, or any tool)
+1. **Take one or more screenshots** (`Win+Shift+S`, `Cmd+Shift+4`, `Print Screen`, or any tool)
 2. **Type your message** in Claude Code and press Enter
-3. **Claude sees your screenshot** — automatically attached, no extra steps
+3. **Claude sees all your screenshots** — automatically attached in order, no extra steps
 
 That's it. No `/paste` command, no dragging files from a folder, no file paths. Just screenshot → type → done.
+
+### Multiple screenshots
+
+Take as many screenshots as you need — Claude-Paste captures each one the moment it appears on your clipboard. They're all sent together when you type your message.
 
 ### Smart freshness detection
 
@@ -19,14 +23,15 @@ Claude-Paste only sends **fresh** screenshots. If you took a screenshot an hour 
 | Scenario | Result |
 |---|---|
 | Screenshot → type message immediately | ✅ Sent |
+| 5 screenshots in a row → type message | ✅ All 5 sent in order |
 | Screenshot → send to friend → Claude 10 min later | ⏭️ Skipped (stale) |
 | Old screenshot from hours ago | ⏭️ Skipped |
 | Explicit "paste my clipboard" | ✅ MCP tool works always |
 
 ### How it works under the hood
 
-- **Background watcher** starts with your Claude session, monitors clipboard changes using OS-native APIs (Windows: `GetClipboardSequenceNumber`, macOS: `clipboard info`, Linux: `xclip`/`wl-paste`)
-- **Prompt hook** fires on every message — checks if a fresh image exists, saves it, tells Claude where to find it, then clears the image from clipboard (one-time paste semantics)
+- **Background watcher** starts with your Claude session, monitors clipboard changes using OS-native APIs (Windows: `GetClipboardSequenceNumber`, macOS: `clipboard info`, Linux: `xclip`/`wl-paste`). Each new screenshot is saved to a queue directory immediately.
+- **Prompt hook** fires on every message — collects all fresh images from the queue, sends them to Claude in chronological order, then clears the clipboard
 - **MCP tool** (`paste_screenshot`) available as explicit fallback for when you want to paste regardless of freshness
 
 ## Installation
