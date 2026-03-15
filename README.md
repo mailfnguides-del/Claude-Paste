@@ -41,7 +41,7 @@ Claude-Paste only sends **fresh** screenshots. If you took a screenshot an hour 
 In Claude Code, run these two commands:
 
 ```
-/plugin marketplace add mailfnguides-del/Claude-Paste
+/plugin marketplace add VibeWithPhil/Claude-Paste
 /plugin install claude-paste@claude-paste-marketplace
 ```
 
@@ -57,7 +57,7 @@ To automatically receive new features and fixes when you start Claude Code, add 
     "claude-paste-marketplace": {
       "source": {
         "source": "github",
-        "repo": "mailfnguides-del/Claude-Paste"
+        "repo": "VibeWithPhil/Claude-Paste"
       },
       "autoUpdate": true
     }

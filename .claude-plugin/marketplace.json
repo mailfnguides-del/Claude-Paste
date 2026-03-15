@@ -1,7 +1,7 @@
 {
   "name": "claude-paste-marketplace",
   "owner": {
-    "name": "mailfnguides-del"
+    "name": "VibeWithPhil"
   },
   "metadata": {
     "description": "Clipboard screenshot paste plugin for Claude Code"
@@ -11,16 +11,16 @@
       "name": "claude-paste",
       "source": {
         "source": "github",
-        "repo": "mailfnguides-del/Claude-Paste"
+        "repo": "VibeWithPhil/Claude-Paste"
       },
       "description": "Paste clipboard screenshots into Claude Code automatically. Take a screenshot, type your message, and Claude sees it — no dragging files. Zero dependencies, cross-platform.",
       "version": "1.1.0",
       "author": {
-        "name": "mailfnguides-del"
+        "name": "VibeWithPhil"
       },
       "license": "MIT",
       "keywords": ["clipboard", "screenshot", "paste", "image", "productivity"],
-      "repository": "https://github.com/mailfnguides-del/Claude-Paste"
+      "repository": "https://github.com/VibeWithPhil/Claude-Paste"
     }
   ]
 }
